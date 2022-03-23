@@ -1,0 +1,96 @@
+<?php
+namespace htjan\yaosap\Error;
+
+use htjan\yaosap\AppConfig;
+use htjan\yaosap\HttpRequest\HttpRequestManager;
+
+class ErrorManager
+{
+
+    public function doGetErrorPage($error_data)
+    {
+        $error_page     = new HttpRequestManager(AppConfig::ERROR_URL, AppConfig::ERROR_METHOD, $error_data);
+        $error_content  = $error_page->getResponse();
+        return $error_content;
+    }
+
+    public static function doAppError(int $error_num, array $backtrace, string $error_extra_text = NULL)
+    {
+
+        if (! AppConfig::ERROR_MESSAGE[$error_num]) {
+            echo ('<p align="left">' . AppConfig::ERROR_MESSAGE[1000] . '</p>');
+            return false;
+        }
+
+        $error_data                         = $backtrace;
+        $error_data[0]['title']             = 'Application error';
+        $error_data[0]['error_number']      = $error_num;
+        $error_data[0]['error_text']        = AppConfig::ERROR_MESSAGE[$error_num];
+        $error_data[0]['error_extra_text']  = $error_extra_text;
+
+        $error_page                     = self::doGetErrorPage($error_data);
+        
+        if(is_null($error_page)){
+            return false;
+        }
+        
+        echo($error_page);
+    }
+
+    // A user-defined error handler function
+    public static function doSrvError($errno, $errstr, $errfile, $errline)
+    {
+        
+        if (!(error_reporting() & $errno)) {
+            // Ce code d'erreur n'est pas inclus dans error_reporting(), donc il continue
+            // jusqu'au gestionaire d'erreur standard de PHP
+            return false;
+        }
+        $errstr = htmlspecialchars($errstr);
+        
+        switch ($errno) {
+            case E_USER_ERROR:
+                $error_prefix = 'ERROR : ';
+                break;
+
+            case E_USER_WARNING:
+                $error_prefix = 'WARNING : ';
+                break;
+
+            case E_USER_NOTICE:
+                $error_prefix = 'NOTICE : ';
+                break;
+
+            default:
+                $error_prefix = 'UNKNOWN ERROR : ';
+                break;
+        }
+
+        $error_data[0]                  = array();
+        $error_data[0]['title']         = 'Server error';
+        $error_data[0]['error_number']  = $errno;
+        $error_data[0]['error_text']    = $error_prefix . $errstr;
+        $error_data[0]['file']          = $errfile;
+        $error_data[0]['line']          = $errline;
+        
+        $error_page                     = self::doGetErrorPage($error_data);
+        
+        if(is_null($error_page)){
+            return false;
+        }
+        
+        echo($error_page);
+    }
+    
+    // Set user-defined error handler function
+    public static function register()
+    {
+        // echo set_error_handler("doSrvError") ? 'T</br>': 'F</br>';
+        
+        set_error_handler(array(__CLASS__,'doSrvError'));
+
+        return true;
+    }
+}
+
+?>

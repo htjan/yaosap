@@ -1,0 +1,53 @@
+body, p, div {
+	font-family: "DejaVu Sans";
+	font-size: 14px;
+	color: #bbbbbb;
+	background-color: #222222;
+}
+a {
+	color: #eeeeee;
+}
+
+div.error {
+	/*round corners*/
+	border-radius: 30px;
+	width: 700px;
+	padding: 15px;
+	color: #ffffff;
+	background-color: #dd0000;
+	/*use to center div*/
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+}
+
+table.error {
+	width: 682px;
+	padding: 4px;
+	margin: 5px;
+}
+
+td.error-td-right {
+	/*border: 700px solid #333;*/
+	width: 60px;
+	text-align: right;
+}
+
+.text-lines {
+	color: #000000;
+	background-color: #7AD37A;
+	position: absolute;
+	width: 600px;
+	top: 60px;
+	left: 50px;
+}
+
+.transaction-line {
+	color: #000000;
+	background-color: #D464D4;
+	position: relative;
+	width: 600px;
+	top: 60px;
+	left: 650px;
+}
